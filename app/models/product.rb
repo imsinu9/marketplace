@@ -33,4 +33,7 @@ class Product
 
   has_one :user, dependent: :delete
 
+  def product_url
+    "#{Marketplace::BASE_URL}/#{Marketplace::API::routes[0].route_version}/store/product/#{self.id}"
+  end
 end
