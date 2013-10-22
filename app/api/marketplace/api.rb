@@ -13,7 +13,7 @@ class Marketplace::API < Grape::API
 
   helpers do
     def authenticate? (token)
-      User.token_present?(token)
+      token_present?(token)
     end
 
     def metadata(status=200, message='OK')
