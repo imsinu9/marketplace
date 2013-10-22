@@ -5,7 +5,6 @@ class Product
 
   field :title, type: String
   field :description, type: String
-  field :keyword, type: Array, :default => []
   field :permalink, type: String
   field :stock, type: Integer
 
@@ -25,13 +24,13 @@ class Product
   field :display_image, type: String
   field :screenshots, type: Array, default: []
 
-  field :tags, type: Array, default: []
   taggable :categories, separator: ','
+  taggable :tags, separator: ','
 
-  validates_uniqueness_of :title , :display_image
+  validates_uniqueness_of :title, :display_image
   validates_presence_of :title, :user_id, :stock, :price, :display_image
 
-  has_one :user, dependent: :delete
+  belongs_to :user, dependent: :delete
 
   def product_url
     "#{Marketplace::BASE_URL}/#{Marketplace::API::routes[0].route_version}/store/product/#{self.id}"
