@@ -27,7 +27,6 @@ class Product
   taggable :categories, separator: ','
   taggable :tags, separator: ','
 
-  validates_uniqueness_of :title, :display_image
   validates_presence_of :title, :user_id, :stock, :price, :display_image
 
   belongs_to :user, dependent: :delete
