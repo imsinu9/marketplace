@@ -4,6 +4,8 @@
 
 require 'yaml'
 User.delete_all
+Category.delete_all
+Product.delete_all
 
 users = YAML.load(File.open(File.expand_path('db/user.yml')))
 users.each do |key, value|
