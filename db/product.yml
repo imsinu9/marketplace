@@ -1,5 +1,4 @@
 prod_1:
-  user: '5266e7271d41c82daf000001'
   title: "Polo Men's Striped Casual Shirt"
   description: "Brand new Polo striped with colours : Red,Blue,Black. Limited Pieces"
   categories:  [ "Clothing", "Men`s Wear", "Shirts"]
@@ -16,8 +15,24 @@ prod_1:
   screenshots: ['http://www.badhaven.com/wp-content/uploads/2012/07/noImageAvailable300.gif']
   tags: ['polo','shirt','limited']
 
+prod_2:
+  title: "Polo Women's Striped Shirt"
+  description: null
+  categories:  [ "Clothing", "Womens Wear", "Shirts"]
+  permalink:   "http://store.polo.com/purchase/shirt/Polo-womens-Striped-Casual-Shirt"
+  stock:       77
+  price:       1799
+  discount:    0
+  incltax:     true
+  shipment:    65.0
+  cod:         true
+  offer:       false
+  offerdesc:   null
+  dpimg:        'http://www.badhaven.com/wp-content/uploads/2012/07/noImageAvailable300.gif'
+  screenshots: []
+  tags: ['Branded','Stylish','limited']
+
 #prod_2:
-#  user:
 #  title:
 #  description:
 #  categories:  ['','']
@@ -33,9 +48,8 @@ prod_1:
 #  dpimg:
 #  screenshots: ['','','']
 #  tags: ['','','']
-#
-#prod_1:
-#  user:
+
+#prod_2:
 #  title:
 #  description:
 #  categories:  ['','']
@@ -51,9 +65,8 @@ prod_1:
 #  dpimg:
 #  screenshots: ['','','']
 #  tags: ['','','']
-#
-#prod_1:
-#  user:
+
+#prod_2:
 #  title:
 #  description:
 #  categories:  ['','']
@@ -69,9 +82,25 @@ prod_1:
 #  dpimg:
 #  screenshots: ['','','']
 #  tags: ['','','']
-#
-#prod_1:
-#  user:
+
+#prod_2:
+#  title:
+#  description:
+#  categories:  ['','']
+#  permalink:
+#  stock:
+#  price:
+#  discount:
+#  incltax:
+#  shipment:
+#  cod:
+#  offer:
+#  offerdesc:
+#  dpimg:
+#  screenshots: ['','','']
+#  tags: ['','','']
+
+#prod_2:
 #  title:
 #  description:
 #  categories:  ['','']

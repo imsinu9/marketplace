@@ -27,23 +27,27 @@ categories.each do |key, value|
 end
 
 products = YAML.load(File.open(File.expand_path('db/product.yml')))
-products.each do |key, value|
-  product_new = Product.new
-  product_new.user = value['user']
-  product_new.title = value['title']
-  product_new.description = value['description']
-  product_new.categories = value['categories']
-  product_new.keyword = value['keyword']
-  product_new.permalink = value['link']
-  product_new.stock = value['stock']
-  product_new.price = value['price']
-  product_new.discount = value['discount']
-  product_new.tax_inclusive = value['Inctax']
-  product_new.shipment_charge = value['shipment']
-  product_new.cash_on_delievery = value['Cod']
-  product_new.offer = value['offer']
-  product_new.offer_description = value['offerdesc']
-  product_new.display_image = value['dp']
-  product_new.screenshots = value['screenshots']
-  product_new.save
+i = 0
+User.each do |user|
+  2.times do
+    i = i+1
+    value = products['prod_'+i.to_s]
+    product_new = user.products.create
+    product_new.title = value['title']
+    product_new.description = value['description']
+    product_new.categories = value['categories'].map { |a| a.downcase }
+    product_new.tags = value['tags'].map { |t| t.downcase }
+    product_new.permalink = value['link']
+    product_new.stock = value['stock']
+    product_new.price = value['price']
+    product_new.discount = value['discount']
+    product_new.tax_inclusive = value['inctax']
+    product_new.shipment_charge = value['shipment']
+    product_new.cash_on_delievery = value['cod']
+    product_new.offer = value['offer']
+    product_new.offer_description = value['offerdesc']
+    product_new.display_image = value['dpimg']
+    product_new.screenshots = value['screenshots']
+    product_new.save!
+  end
 end
