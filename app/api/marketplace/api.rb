@@ -75,42 +75,70 @@ class Marketplace::API < Grape::API
 
           {
               :metadata => metadata,
-              :response => @product.as_json(:only => [:description, :categories, :permalink, :created_date, :stock, :discount, :tax_inclusive,
-                                                      :shipment_charge, :cash_on_delievery, :offer, :offer_description, :views, :buys, :rating,
-                                                      :screenshots], :methods => [:product_url, :seller, :image_count, :related_products])
+              :response => @product.as_json(:only => [:description, :categories, :permalink, :created_at, :stock,
+                                                      :discount, :tax_inclusive, :shipment_charge, :cash_on_delievery,
+                                                      :offer, :offer_description, :views, :buys, :rating, :screenshots],
+                                            :methods => [:product_url, :date_posted, :seller, :image_count, :related_products])
           }
         end
       end
+    end
 
-      resources :category do
-        get 'list' do
-          @categories = Category.as_json(:methods => [:total_products])
-        end
-
+    resources :category do
+      get 'list' do
         params do
-          requires :category_id, type: String, desc: 'Category ID'
+          requires :sort, type: String
+          requires :order, type: String
         end
 
-        get ':category_id' do
-          @category = Category.find(params[:category_id])
-          if @categories.blank?
-            {
-                :metadata => metadata(404, 'Not Found'),
-                :response => ''
-            }
-          else
-            {
-                :metadata => metadata(404, 'Not Found'),
-                :response => @category.as_json(:methods => [:total_products])
-            }
-          end
-        end
+        @categories = Category.all.order_by(params[:order].eql?('Asc') ? :name.asc : :name.desc)
+
+        {
+            :metadata => metadata,
+            :response =>
+                {
+                    :total_categories => Category.total_categories,
+                    :categories => @categories.as_json(:only => [:_id])
+                }
+        }
       end
 
-      resources :user do
-        get 'ownedproduct' do
-          metadata
+      get ':category_id' do
+        params do
+          requires :sort, type: String
+          requires :order, type: String
+          requires :page, type: Integer
+          requires :per, type: Integer
         end
+
+        @category = Category.find(params[:category_id])
+
+        if @category.blank?
+          {
+              :metadata => metadata(404, 'Not Found'),
+              :response => ''
+          }
+        else
+          sort = params[:sort].to_sym
+          #ordered = params[:order].to_sym
+          @products = Product.tagged_with(:categories, @category.name).order_by(sort.send(params[:order])).page(params[:page]).per(params[:per])
+
+          {
+              :metadata => metadata,
+              :response =>
+                  {
+                      :total_products => @category.total_products,
+                      :products => @products.as_json(:only => [:stock, :discount, :offer, :views, :buys],
+                                                     :methods => [:seller_shop, :product_url, :date_posted])
+                  }
+          }
+        end
+      end
+    end
+
+    resources :user do
+      get 'ownedproduct' do
+        metadata
       end
     end
   end
