@@ -22,7 +22,18 @@ class Marketplace::API < Grape::API
           :message => message
       }
     end
+
+    #def product_present? (id)
+    #  product = Product.find(id)
+    #  product.blank? ? metadata(404, 'Not Found') : product
+    #end
+
+    #def category_present?(id)
+    #  category = Category.find(id)
+    #  category.blank? ? metadata(404, 'Not Found') : category
+    #end
   end
+
 
   namespace :store do
     resources :product do
@@ -52,30 +63,54 @@ class Marketplace::API < Grape::API
         end
       end
 
-      params do
-        requires :product_id, type: String, desc: 'Product ID'
-      end
-
       get ':product_id' do
-      end
-    end
+        @product = Product.find(params[:product_id])
+        if @product.blank?
+          {
+              :metadata => metadata(404, 'Not Found'),
+              :response => ''
+          }
+        else
+          @product.increment_view_count
 
-    resources :category do
-      get 'list' do
-        metadata
+          {
+              :metadata => metadata,
+              :response => @product.as_json(:only => [:description, :categories, :permalink, :created_date, :stock, :discount, :tax_inclusive,
+                                                      :shipment_charge, :cash_on_delievery, :offer, :offer_description, :views, :buys, :rating,
+                                                      :screenshots], :methods => [:product_url, :seller, :image_count, :related_products])
+          }
+        end
       end
 
-      params do
-        requires :category_id, type: String, desc: 'Category ID'
+      resources :category do
+        get 'list' do
+          @categories = Category.as_json(:methods => [:total_products])
+        end
+
+        params do
+          requires :category_id, type: String, desc: 'Category ID'
+        end
+
+        get ':category_id' do
+          @category = Category.find(params[:category_id])
+          if @categories.blank?
+            {
+                :metadata => metadata(404, 'Not Found'),
+                :response => ''
+            }
+          else
+            {
+                :metadata => metadata(404, 'Not Found'),
+                :response => @category.as_json(:methods => [:total_products])
+            }
+          end
+        end
       end
 
-      get ':category_id' do
-      end
-    end
-
-    resources :user do
-      get 'ownedproduct' do
-        metadata
+      resources :user do
+        get 'ownedproduct' do
+          metadata
+        end
       end
     end
   end
