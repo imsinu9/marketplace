@@ -39,6 +39,10 @@ class Product
     self.user.shop
   end
 
+  def date_posted
+    self.created_at
+  end
+
   def image_count
     self.screenshots.count + 1
   end
