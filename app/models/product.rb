@@ -32,6 +32,28 @@ class Product
   belongs_to :user, dependent: :delete
 
   def product_url
-    "#{Marketplace::BASE_URL}/#{Marketplace::API::routes[0].route_version}/store/product/#{self.id}"
+    "#{Marketplace::API::BASE_URL}/#{Marketplace::API::routes[0].route_version}/store/product/#{self.id}"
+  end
+
+  def seller
+    self.user.shop
+  end
+
+  def image_count
+    self.screenshots.count + 1
+  end
+
+  def increment_view_count
+    self.inc(:views,1)
+  end
+
+  def related_products
+    Product.tagged_with(:categories, self.categories).limit(3)
+  end
+
+  def as_json(options={})
+    only = options[:only] || []
+    methods = options[:methods] || []
+    super(:only => only.push(:title, :price, :display_image), :methods => methods.push(:product_url))
   end
 end

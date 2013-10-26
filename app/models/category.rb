@@ -6,4 +6,18 @@ class Category
 
   validates_presence_of :name
   validates_uniqueness_of :name
+
+  def category_url
+    "#{Marketplace::API::BASE_URL}/#{Marketplace::API::routes[0].route_version}/store/category/#{self.id}"
+  end
+
+  def as_json(options={})
+    only = options[:only] || []
+    methods = options[:methods] || []
+    super(:only => only.push(:name), :methods => methods.push(:category_url))
+  end
+
+  def total_products
+    Product.tagged_with(:categories,self.name).count
+  end
 end
