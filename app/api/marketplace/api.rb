@@ -4,7 +4,7 @@ class Marketplace::API < Grape::API
   version 'v1'
   format :json
 
-  BASE_URL = 'http://marketplace.com/api'
+  BASE_URL = 'http://heroku-marketplace.herokuapp.com/api'
   RELATED_PRODUCT_COUNT = 3
 
   #before do
