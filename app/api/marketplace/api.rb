@@ -126,7 +126,7 @@ class Marketplace::API < Grape::API
 
             {
                 :metadata => metadata(201, 'Created'),
-                :response => {:url => product_new.product_url}
+                :response => {:url => product_new.url}
             }
           end
         end
@@ -159,7 +159,7 @@ class Marketplace::API < Grape::API
               :response => @product.as_json(:only => [:description, :categories, :permalink, :created_at, :stock,
                                                       :discount, :tax_inclusive, :shipment_charge, :cash_on_delievery,
                                                       :offer, :offer_description, :views, :buys, :rating, :screenshots],
-                                            :methods => [:product_url, :date_posted, :seller, :image_count, :related_products])
+                                            :methods => [:date_posted, :seller, :image_count, :related_products])
           }
         end
       end
@@ -207,9 +207,9 @@ class Marketplace::API < Grape::API
               :metadata => metadata,
               :response =>
                   {
-                      :total_products => @category.total_products,
+                      :total_products => @category.total_products_in_category,
                       :products => @products.as_json(:only => [:stock, :discount, :offer, :views, :buys],
-                                                     :methods => [:seller_shop, :product_url, :date_posted])
+                                                     :methods => [:seller_shop, :date_posted])
                   }
           }
         end
@@ -218,7 +218,15 @@ class Marketplace::API < Grape::API
 
     resources :user do
       get 'ownedproduct' do
-        metadata
+        @user_products = User.get_user_with_token(request.env['HTTP_AUTHORIZATION']).products
+        {
+            :metadata => metadata,
+            :response =>
+                {
+                    :total_products => @user_products.count,
+                    :products => @user_products.as_json(:only => [:stock], :methods => [:date_posted])
+                }
+        }
       end
     end
   end
