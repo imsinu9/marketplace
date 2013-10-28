@@ -31,6 +31,8 @@ class Product
 
   belongs_to :user, dependent: :delete
 
+  scope :by_category, lambda { |category| tagged_with(:categories, category) }
+
   def product_url
     "#{Marketplace::API::BASE_URL}/#{Marketplace::API::routes[0].route_version}/store/product/#{self.id}"
   end
@@ -48,7 +50,7 @@ class Product
   end
 
   def increment_view_count
-    self.inc(:views,1)
+    self.inc(:views, 1)
   end
 
   def related_products
