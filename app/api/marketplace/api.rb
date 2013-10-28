@@ -8,12 +8,14 @@ class Marketplace::API < Grape::API
   RELATED_PRODUCT_COUNT = 3
 
   #before do
-  #  metadata(401,'Not Authorized') unless authenticate?(request.env['HTTP_AUTHORIZATION'])
+  #  if request.env['HTTP_AUTHORIZATION'].blank? || !authenticate?(request.env['HTTP_AUTHORIZATION'])
+  #    throw :error, :message => {:metadata => metadata(401, 'Not Authorized')}
+  #  end
   #end
 
   helpers do
     def authenticate? (token)
-      token_present?(token)
+      User.token_present?(token)
     end
 
     def metadata(status=200, message='OK')
@@ -22,32 +24,111 @@ class Marketplace::API < Grape::API
           :message => message
       }
     end
-
-    #def product_present? (id)
-    #  product = Product.find(id)
-    #  product.blank? ? metadata(404, 'Not Found') : product
-    #end
-
-    #def category_present?(id)
-    #  category = Category.find(id)
-    #  category.blank? ? metadata(404, 'Not Found') : category
-    #end
   end
 
 
   namespace :store do
     resources :product do
       get 'search' do
-        metadata
+        params do
+          optional :q, type: String
+          optional :category, type: String
+          optional :seller, type: String
+          requires :available, type: Boolean
+          requires :offer, type: Boolean
+          requires :sort, type: String
+          requires :order, type: String
+          requires :page, type: Integer
+          requires :per, type: Integer
+        end
+
+        page = params[:page] || 1
+        per = params[:per] || 30
+        order = params[:order] || 'desc'
+        sort = params[:sort] || 'views'
+        avail = params[:available] || false
+        offer = params[:offer] || false
+
+        unless params[:category].blank?
+          products_by_category = Product.by_category(params[:category])
+        end
+
+        unless params[:seller].blank?
+          products_by_seller = User.where(:shop => params[:seller]).product
+        end
+
+        unless params[:q].blank?
+          keywords = params[:q].gsub(/[^a-z A-Z 1-9]/, ' ').downcase.split(" ")
+          keywords.reject! { |words| words.length<3 }
+          products_by_query = Product.where(:title.in => keywords)
+        end
+
+        products =
+            (products_by_category.to_a + products_by_seller.to_a + products_by_query.to_a).flatten.uniq
+        products.reject! { |product| product.blank? }
+        {
+            :metadata => metadata,
+            :response =>
+                {
+                    :total_products => products.count,
+                    :products => products.as_json(:only => [:categories, :stock, :discount, :offer, :views, :buys],
+                                                  :method => [:seller, :date_posted])
+                }
+        }
       end
 
       segment :manage do
         post 'add' do
-          metadata
-        end
+          params do
+            requires :title, type: String
+            optional :description, type: String
+            requires :category, type: Array
+            optional :permalink, type: String
+            requires :stock, type: Integer
+            requires :price, type: Float
+            optional :discount, type: Float
+            requires :shipment_charge, type: Float
+            requires :cash_on_delivery, type: Boolean
+            requires :offer, type: Boolean
+            optional :offer_description, type: String
+            requires :display_image, type: String
+            optional :screenshots, type: Array
+            optional :tags, type: Array
+          end
 
-        params do
-          requires :product_id, type: String, desc: 'Product ID'
+          if params[:title].nil? || params[:category].nil? || params[:stock].nil? ||params[:price].nil? ||
+              params[:offer].nil? || params[:cash_on_delivery].nil? || params[:shipment_charge].nil? ||
+              params[:display_image].nil?
+            {
+                :metadata => metadata(501, 'Bad Request')
+            }
+
+          else
+            user = User.get_user_with_token(request.env['HTTP_AUTHORIZATION'])
+            product_new = user.products.new
+            product_new.title = params[:title]
+            product_new.description = params[:description] || nil
+            product_new.categories = params[:category].map { |a| a.downcase }
+            product_new.permalink = params[:link]
+            product_new.stock = params[:stock]
+            product_new.price = params[:price]
+            product_new.discount = params[:discount] || nil
+            product_new.shipment_charge = params[:shipment_charge]
+            product_new.cash_on_delievery = params[:cash_on_delivery]
+            product_new.offer = params[:offer]
+            product_new.offer_description = params[:offer_description] || nil
+            product_new.tags = params[:tags].map { |t| t.downcase }
+            product_new.offer_description = params[:offerdesc]
+            product_new.display_image = params[:display_image]
+            product_new.screenshots = params[:screenshots] || nil
+            product_new.tags = params[:tags] || nil
+            product_new.save!
+
+            {
+                :metadata => metadata(201, 'Created'),
+                :response => {:url => product_new.product_url}
+            }
+          end
         end
 
         get 'edit/:product_id' do
@@ -120,8 +201,7 @@ class Marketplace::API < Grape::API
           }
         else
           sort = params[:sort].to_sym
-          #ordered = params[:order].to_sym
-          @products = Product.tagged_with(:categories, @category.name).order_by(sort.send(params[:order])).page(params[:page]).per(params[:per])
+          @products = Product.by_category(@category.name).order_by(sort.send(params[:order])).page(params[:page]).per(params[:per])
 
           {
               :metadata => metadata,
