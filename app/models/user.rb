@@ -24,5 +24,9 @@ class User
     def token_present? (token)
       User.where(:token => token).exists?
     end
+
+    def get_user_with_token(token)
+      User.find_by(:token => token)
+    end
   end
 end
