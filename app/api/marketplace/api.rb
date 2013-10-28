@@ -192,6 +192,11 @@ class Marketplace::API < Grape::API
           requires :per, type: Integer
         end
 
+        page = params[:page] || 1
+        per = params[:per] || 30
+        order = params[:order] || 'desc'
+        sort = params[:sort] || 'views'
+
         @category = Category.find(params[:category_id])
 
         if @category.blank?
@@ -200,8 +205,8 @@ class Marketplace::API < Grape::API
               :response => ''
           }
         else
-          sort = params[:sort].to_sym
-          @products = Product.by_category(@category.name).order_by(sort.send(params[:order])).page(params[:page]).per(params[:per])
+          sorts = sort.to_sym
+          @products = Product.by_category(@category.name).order_by(sorts.send(params[:order])).page(params[:page]).per(params[:per])
 
           {
               :metadata => metadata,
@@ -218,13 +223,27 @@ class Marketplace::API < Grape::API
 
     resources :user do
       get 'ownedproduct' do
+        params do
+          requires :sort, type: String
+          requires :order, type: String
+          requires :page, type: Integer
+          requires :per, type: Integer
+        end
+
+        page = params[:page] || 1
+        per = params[:per] || 30
+        order = params[:order] || 'asc'
+        sort = params[:sort] || 'title'
+
         @user_products = User.get_user_with_token(request.env['HTTP_AUTHORIZATION']).products
+        sorts = sort.to_sym
         {
             :metadata => metadata,
             :response =>
                 {
                     :total_products => @user_products.count,
-                    :products => @user_products.as_json(:only => [:stock], :methods => [:date_posted])
+                    :products => @user_products.order_by(sorts.send(params[:order])).page(params[:page]).per(
+                        params[:per]).as_json(:only => [:stock], :methods => [:date_posted])
                 }
         }
       end
