@@ -33,7 +33,7 @@ class Product
 
   scope :by_category, lambda { |category| tagged_with(:categories, category) }
 
-  def product_url
+  def url
     "#{Marketplace::API::BASE_URL}/#{Marketplace::API::routes[0].route_version}/store/product/#{self.id}"
   end
 
@@ -60,6 +60,6 @@ class Product
   def as_json(options={})
     only = options[:only] || []
     methods = options[:methods] || []
-    super(:only => only.push(:title, :price, :display_image), :methods => methods.push(:product_url))
+    super(:only => only.push(:title, :price, :display_image), :methods => methods.push(:url))
   end
 end
