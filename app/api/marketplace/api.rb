@@ -7,11 +7,11 @@ class Marketplace::API < Grape::API
   BASE_URL = 'http://heroku-marketplace.herokuapp.com/api'
   RELATED_PRODUCT_COUNT = 3
 
-  #before do
-  #  if request.env['HTTP_AUTHORIZATION'].blank? || !authenticate?(request.env['HTTP_AUTHORIZATION'])
-  #    throw :error, :message => {:metadata => metadata(401, 'Not Authorized')}
-  #  end
-  #end
+  before do
+    if request.env['HTTP_AUTHORIZATION'].blank? || !authenticate?(request.env['HTTP_AUTHORIZATION'])
+      throw :error, :message => {:metadata => metadata(401, 'Not Authorized')}
+    end
+  end
 
   helpers do
     def authenticate? (token)
@@ -132,7 +132,26 @@ class Marketplace::API < Grape::API
         end
 
         get 'edit/:product_id' do
-          metadata
+          user = User.get_user_with_token(request.env['HTTP_AUTHORIZATION'])
+          @product = Product.find(params[:product_id])
+          if @product.blank?
+            {
+                :metadata => metadata(404, 'Not Found'),
+                :response => ''
+            }
+          elsif @product.user.id != user.id
+             {
+                 :metadata => metadata(401, 'Not Authorized'),
+                 :response => ''
+             }
+          else
+            {
+                :metadata => metadata,
+                :response => @product.as_json(:only => [:description, :categories, :permalink, :stock, :discount,
+                                                        :shipment_charge, :cash_on_delievery, :offer, :tags,
+                                                        :offer_description, :screenshots])
+            }
+          end
         end
 
         put 'update/:product_id' do
@@ -156,9 +175,9 @@ class Marketplace::API < Grape::API
 
           {
               :metadata => metadata,
-              :response => @product.as_json(:only => [:description, :categories, :permalink, :created_at, :stock,
-                                                      :discount, :tax_inclusive, :shipment_charge, :cash_on_delievery,
-                                                      :offer, :offer_description, :views, :buys, :rating, :screenshots],
+              :response => @product.as_json(:only => [:description, :categories, :permalink, :stock, :discount,
+                                                      :tax_inclusive, :shipment_charge, :cash_on_delievery, :offer,
+                                                      :offer_description, :views, :buys, :rating, :screenshots],
                                             :methods => [:date_posted, :seller, :image_count, :related_products])
           }
         end
