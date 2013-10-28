@@ -20,7 +20,7 @@ class Category
     "#{Marketplace::API::BASE_URL}/#{Marketplace::API::routes[0].route_version}/store/category/#{self.id}"
   end
 
-  def total_products
+  def total_products_in_category
     Product.tagged_with(:categories, self.name).count
   end
 
