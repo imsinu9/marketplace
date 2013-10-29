@@ -31,7 +31,7 @@ class Product
 
   belongs_to :user, dependent: :delete
 
-  scope :by_category, lambda { |category| tagged_with(:categories, category) }
+  scope :by_category, lambda { |category| tagged_with(:categories, category.downcase) }
 
   def url
     "#{Marketplace::API::BASE_URL}/#{Marketplace::API::routes[0].route_version}/store/product/#{self.id}"
