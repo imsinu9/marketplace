@@ -1,7 +1,7 @@
 prod_1:
   title: "Polo Men's Striped Casual Shirt"
   description: "Brand new Polo striped with colours : Red,Blue,Black. Limited Pieces"
-  categories:  [ "Clothing", "Men`s Wear", "Shirts"]
+  categories:  [ "Clothing", "Mens Wear", "Shirts"]
   permalink:   "http://store.polo.com/purchase/shirt/Polo-Mens-Striped-Casual-Shirt"
   stock:       67
   price:       1999
