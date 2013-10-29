@@ -57,6 +57,13 @@ class Product
     Product.tagged_with(:categories, self.categories).limit(3)
   end
 
+  def update_product(title, desc, category, permalink, stock, price, discount, shipment, cod, offer, offerdesc, dp, screenshots, tags)
+    self.update_attributes(:title => title, :description => desc, :categories => category, :permalink => permalink,
+                           :stock => stock, :price => price, :discount => discount, :shipment_charge => shipment,
+                           :cash_on_delievery => cod, :offer => offer, :offer_description => offerdesc, :display_image => dp,
+                           :screenshots => screenshots, :tags => tags)
+  end
+
   def as_json(options={})
     only = options[:only] || []
     methods = options[:methods] || []
