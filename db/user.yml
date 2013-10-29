@@ -6,14 +6,14 @@ user_1:
   primary_email: 'contact@trendingfabrics.com'
   secondary_email: 'sales@trendingfabrics.com'
 
-#user_2:
-#  token: '8ef6ebf7186412e3'
-#  name:
-#  shop:
-#  contact:
-#  primary_email:
-#  secondary_email:
-#
+user_2:
+  token: 'generalusertoken'
+  name:   'General User'
+  shop:    'General User'
+  contact:  ''
+  primary_email: 'nomail@marketplace.com'
+  secondary_email: ''
+
 #user_3:
 #  token:  '313427a893e6dac1'
 #  name:  ''
