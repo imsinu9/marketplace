@@ -26,6 +26,11 @@ class Marketplace::API < Grape::API
     end
   end
 
+  rescue_from :all do
+    {
+        :metadata => metadata(401, 'Oops! Something Went Wrong')
+    }
+  end
 
   namespace :store do
     resources :product do
@@ -105,28 +110,14 @@ class Marketplace::API < Grape::API
 
           else
             user = User.get_user_with_token(request.env['HTTP_AUTHORIZATION'])
-            product_new = user.products.new
-            product_new.title = params[:title]
-            product_new.description = params[:description] || nil
-            product_new.categories = params[:category].map { |a| a.downcase }
-            product_new.permalink = params[:link]
-            product_new.stock = params[:stock]
-            product_new.price = params[:price]
-            product_new.discount = params[:discount] || nil
-            product_new.shipment_charge = params[:shipment_charge]
-            product_new.cash_on_delievery = params[:cash_on_delivery]
-            product_new.offer = params[:offer]
-            product_new.offer_description = params[:offer_description] || nil
-            product_new.tags = params[:tags].map { |t| t.downcase }
-            product_new.offer_description = params[:offerdesc]
-            product_new.display_image = params[:display_image]
-            product_new.screenshots = params[:screenshots] || nil
-            product_new.tags = params[:tags] || nil
-            product_new.save!
+            @product = user.create_product(params[:title], params[:description], params[:category], params[:permalink],
+                                           params[:stock], params[:price], params[:discount], params[:shipment_charge],
+                                           params[:cash_on_delivery], params[:offer], params[:offer_description],
+                                           params[:display_image], params[:screenshots], params[:tags])
 
             {
                 :metadata => metadata(201, 'Created'),
-                :response => {:url => product_new.url}
+                :response => {:url => @product.url}
             }
           end
         end
@@ -309,6 +300,29 @@ class Marketplace::API < Grape::API
     end
 
     resources :user do
+      post 'add' do
+        params do
+          requires :name, type: String
+          requires :shop, type: String
+          requires :primary_mail, type: String
+          optional :contact, type: String
+          optional :secondary_mail, type: String
+        end
+
+        if params[:name].nil? || params[:shop].nil? || params[:primary_mail].nil?
+          {
+              :metadata => metadata(501, 'Bad Request')
+          }
+        else
+          @new_user = User.create_user(params[:name], params[:shop], params[:contact], params[:primary_mail],
+                                       params[:secondary_mail])
+          {
+              :metadata => metadata(201, 'Created'),
+              :response => {:token => @new_user.token}
+          }
+        end
+      end
+
       get 'ownedproduct' do
         params do
           requires :sort, type: String
