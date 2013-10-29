@@ -14,16 +14,16 @@ users.each do |key, value|
   user_new.name = value['name']
   user_new.shop = value['shop']
   user_new.contact = value['contact']
-  user_new.primary_email = value['email1']
-  user_new.secondary_email= value['email2']
-  user_new.save
+  user_new.primary_email = value['primary_email']
+  user_new.secondary_email= value['secondary_email']
+  user_new.save!
 end
 
 categories = YAML.load(File.open(File.expand_path('db/category.yml')))
 categories.each do |key, value|
   category_new = Category.new
   category_new.name = value['name']
-  category_new.save
+  category_new.save!
 end
 
 products = YAML.load(File.open(File.expand_path('db/product.yml')))
