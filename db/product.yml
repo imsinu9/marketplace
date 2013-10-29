@@ -32,22 +32,39 @@ prod_2:
   screenshots: []
   tags: ['Branded','Stylish','limited']
 
-#prod_2:
-#  title:
-#  description:
-#  categories:  ['','']
-#  permalink:
-#  stock:
-#  price:
-#  discount:
-#  incltax:
-#  shipment:
-#  cod:
-#  offer:
-#  offerdesc:
-#  dpimg:
-#  screenshots: ['','','']
-#  tags: ['','','']
+prod_3:
+  title: 'sample'
+  description: 'sample'
+  categories:  ['sample']
+  permalink:  ''
+  stock:   0
+  price:   0
+  discount:  0
+  incltax:   true
+  shipment:  0
+  cod:    false
+  offer:   false
+  offerdesc:  ''
+  dpimg:  'http://www.badhaven.com/wp-content/uploads/2012/07/noImageAvailable300.gif'
+  screenshots: []
+  tags: ['sample']
+
+prod_4:
+  title: 'sample'
+  description: 'sample'
+  categories:  ['sample']
+  permalink:  ''
+  stock:   0
+  price:   0
+  discount:  0
+  incltax:   true
+  shipment:  0
+  cod:    false
+  offer:   false
+  offerdesc:  ''
+  dpimg:  'http://www.badhaven.com/wp-content/uploads/2012/07/noImageAvailable300.gif'
+  screenshots: []
+  tags: ['sample']
 
 #prod_2:
 #  title:
