@@ -323,6 +323,16 @@ class Marketplace::API < Grape::API
         end
       end
 
+      delete 'delete' do
+        user = User.get_user_with_token(request.env['HTTP_AUTHORIZATION'])
+        user.products.each { |product| product.delete }
+        user.delete
+        {
+            :metadata => metadata,
+            :response => ''
+        }
+      end
+
       get 'ownedproduct' do
         params do
           requires :sort, type: String
