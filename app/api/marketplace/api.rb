@@ -101,9 +101,9 @@ class Marketplace::API < Grape::API
             optional :tags, type: Array
           end
 
-          if params[:title].nil? || params[:category].nil? || params[:stock].nil? ||params[:price].nil? ||
-              params[:offer].nil? || params[:cash_on_delivery].nil? || params[:shipment_charge].nil? ||
-              params[:display_image].nil?
+          if params[:title].blank? || params[:category].blank? || params[:stock].blank? ||params[:price].blank? ||
+              params[:offer].nil? || params[:cash_on_delivery].nil? || params[:shipment_charge].blank? ||
+              params[:display_image].blank?
             {
                 :metadata => metadata(501, 'Bad Request')
             }
@@ -169,9 +169,9 @@ class Marketplace::API < Grape::API
                 :metadata => metadata(404, 'Not Found'),
                 :response => ''
             }
-          elsif params[:title].nil? || params[:category].nil? || params[:stock].nil? ||params[:price].nil? ||
-              params[:offer].nil? || params[:cash_on_delivery].nil? || params[:shipment_charge].nil? ||
-              params[:display_image].nil?
+          elsif params[:title].blank? || params[:category].blank? || params[:stock].blank? ||params[:price].blank? ||
+              params[:offer].nil? || params[:cash_on_delivery].nil? || params[:shipment_charge].blank? ||
+              params[:display_image].blank?
             {
                 :metadata => metadata(501, 'Bad Request')
             }
@@ -309,7 +309,7 @@ class Marketplace::API < Grape::API
           optional :secondary_mail, type: String
         end
 
-        if params[:name].nil? || params[:shop].nil? || params[:primary_mail].nil?
+        if params[:name].blank? || params[:shop].blank? || params[:primary_mail].blank?
           {
               :metadata => metadata(501, 'Bad Request')
           }
