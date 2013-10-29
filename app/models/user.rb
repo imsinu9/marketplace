@@ -9,7 +9,7 @@ class User
   field :primary_email, type: String
   field :secondary_email, type: String
 
-  validates_presence_of :token, :primary_email, :shop
+  validates_presence_of :token, :primary_email, :shop, :name
   validates_uniqueness_of :token
 
   has_many :products, dependent: :delete
