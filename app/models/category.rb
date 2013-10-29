@@ -21,7 +21,7 @@ class Category
   end
 
   def total_products
-    Product.tagged_with(:categories, self.name).count
+    Product.tagged_with(:categories, self.name.downcase).count
   end
 
   def as_json(options={})
