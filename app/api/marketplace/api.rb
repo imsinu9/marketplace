@@ -140,10 +140,10 @@ class Marketplace::API < Grape::API
                 :response => ''
             }
           elsif @product.user.id != user.id
-             {
-                 :metadata => metadata(401, 'Not Authorized'),
-                 :response => ''
-             }
+            {
+                :metadata => metadata(401, 'Not Authorized'),
+                :response => ''
+            }
           else
             {
                 :metadata => metadata,
@@ -155,11 +155,79 @@ class Marketplace::API < Grape::API
         end
 
         put 'update/:product_id' do
-          metadata
+          params do
+            requires :title, type: String
+            optional :description, type: String
+            requires :category, type: Array
+            optional :permalink, type: String
+            requires :stock, type: Integer
+            requires :price, type: Float
+            optional :discount, type: Float
+            requires :shipment_charge, type: Float
+            requires :cash_on_delivery, type: Boolean
+            requires :offer, type: Boolean
+            optional :offer_description, type: String
+            requires :display_image, type: String
+            optional :screenshots, type: Array
+            optional :tags, type: Array
+          end
+          user = User.get_user_with_token(request.env['HTTP_AUTHORIZATION'])
+          @product = Product.find(params[:product_id])
+          if @product.blank?
+            {
+                :metadata => metadata(404, 'Not Found'),
+                :response => ''
+            }
+          elsif params[:title].nil? || params[:category].nil? || params[:stock].nil? ||params[:price].nil? ||
+              params[:offer].nil? || params[:cash_on_delivery].nil? || params[:shipment_charge].nil? ||
+              params[:display_image].nil?
+            {
+                :metadata => metadata(501, 'Bad Request')
+            }
+
+          elsif @product.user.id != user.id
+            {
+                :metadata => metadata(401, 'Not Authorized'),
+                :response => ''
+            }
+          else
+            @product.update_product(params[:title], params[:description], params[:category], params[:permalink],
+                                    params[:stock], params[:price], params[:discount], params[:shipment_charge],
+                                    params[:cash_on_delivery], params[:offer], params[:offer_description],
+                                    params[:display_image], params[:screenshots], params[:tags])
+            {
+                :metadata => metadata,
+                :response => {:url => @product.url}
+            }
+          end
         end
 
         delete 'delete/:product_id' do
-          metadata
+          params do
+            requires :permanent, type: Boolean
+          end
+
+          permanent = params[:permanent].nil? ? false : params[:permanent]
+          user = User.get_user_with_token(request.env['HTTP_AUTHORIZATION'])
+          @product = Product.find(params[:product_id])
+
+          if @product.blank?
+            {
+                :metadata => metadata(404, 'Not Found'),
+                :response => ''
+            }
+          elsif @product.user.id != user.id
+            {
+                :metadata => metadata(401, 'Not Authorized'),
+                :response => ''
+            }
+          else
+            Product.where(:_id => params[:product_id]).delete
+            {
+                :metadata => metadata,
+                :response => {:permanent => permanent}
+            }
+          end
         end
       end
 
