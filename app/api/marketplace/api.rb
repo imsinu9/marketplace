@@ -26,12 +26,6 @@ class Marketplace::API < Grape::API
     end
   end
 
-  rescue_from :all do
-    {
-        :metadata => metadata(401, 'Oops! Something Went Wrong')
-    }
-  end
-
   namespace :store do
     resources :product do
       get 'search' do
@@ -51,35 +45,66 @@ class Marketplace::API < Grape::API
         per = params[:per] || 30
         order = params[:order] || 'desc'
         sort = params[:sort] || 'views'
-        avail = params[:available] || false
-        offer = params[:offer] || false
+        avail = params[:available] == 'true' ? true : false
+        offer = params[:offer] == 'true' ? true : false
+        sorts = sort.to_sym
 
-        unless params[:category].blank?
-          products_by_category = Product.by_category(params[:category])
+        if !sort.in?(['discount', 'created_at', 'views', 'price', 'buys']) || !order.in?(['desc', 'asc'])
+          {
+              :metadata => metadata(501, 'Bad Request'),
+              :response => ''
+          }
+        else
+
+          if offer
+            @products = Product.with_offer
+          else
+            @products = Product.all
+          end
+
+          if avail
+            @products = Product.with_availability
+          end
+
+          if !params[:seller].blank?
+            @products = User.find_by(:shop => params[:seller]).products || @products
+          end
+
+          if !params[:category].blank?
+            @products = @products.by_category(params[:category]) || @products
+          end
+
+          if !params[:q].blank?
+            keywords = params[:q].gsub(/[^a-z A-Z 1-9]/, ' ').downcase.split(" ")
+            keywords.reject! { |words| words.length<3 }
+            @products_id = []
+            @products.each do |product|
+              sample_keywords = keywords
+              title_words = product.title.gsub(/[^a-z A-Z 1-9]/, ' ').downcase.split(" ")
+              title_words.reject! { |word| word.length<3 }
+              tags_words = product.tags.map { |t| t.downcase }
+              tags_words.reject! { |word| word.length<3 }
+
+              words = (tags_words + title_words).flatten.uniq
+              sample_keywords.reject! { |word| !word.in?(words) }
+
+              if sample_keywords.count>0
+                @products_id << product.id
+              end
+            end
+          end
+
+          final_products = @products.where(:id.in => @products_id).order_by(sorts.send(params[:order])).page(params[:page]).per(params[:per])
+          {
+              :metadata => metadata,
+              :response =>
+                  {
+                      :total_products => final_products.count,
+                      :products => final_products.as_json(:only => [:categories, :stock, :discount, :offer, :views, :buys],
+                                                          :methods => [:seller, :date_posted])
+                  }
+          }
         end
-
-        unless params[:seller].blank?
-          products_by_seller = User.where(:shop => params[:seller]).product
-        end
-
-        unless params[:q].blank?
-          keywords = params[:q].gsub(/[^a-z A-Z 1-9]/, ' ').downcase.split(" ")
-          keywords.reject! { |words| words.length<3 }
-          products_by_query = Product.where(:title.in => keywords)
-        end
-
-        products =
-            (products_by_category.to_a + products_by_seller.to_a + products_by_query.to_a).flatten.uniq
-        products.reject! { |product| product.blank? }
-        {
-            :metadata => metadata,
-            :response =>
-                {
-                    :total_products => products.count,
-                    :products => products.as_json(:only => [:categories, :stock, :discount, :offer, :views, :buys],
-                                                  :method => [:seller, :date_posted])
-                }
-        }
       end
 
       segment :manage do
@@ -282,6 +307,11 @@ class Marketplace::API < Grape::API
               :metadata => metadata(404, 'Not Found'),
               :response => ''
           }
+        elsif !sort.in?(['discount', 'created_at', 'views', 'price', 'buys']) || !order.in?(['desc', 'asc'])
+          {
+              :metadata => metadata(501, 'Bad Request'),
+              :response => ''
+          }
         else
           sorts = sort.to_sym
           @products = Product.by_category(@category.name).order_by(sorts.send(params[:order])).page(params[:page]).per(params[:per])
@@ -290,9 +320,9 @@ class Marketplace::API < Grape::API
               :metadata => metadata,
               :response =>
                   {
-                      :total_products => @category.total_products_in_category,
+                      :total_products => @category.total_products,
                       :products => @products.as_json(:only => [:stock, :discount, :offer, :views, :buys],
-                                                     :methods => [:seller_shop, :date_posted])
+                                                     :methods => [:seller, :date_posted])
                   }
           }
         end
@@ -346,17 +376,24 @@ class Marketplace::API < Grape::API
         order = params[:order] || 'asc'
         sort = params[:sort] || 'title'
 
-        @user_products = User.get_user_with_token(request.env['HTTP_AUTHORIZATION']).products
-        sorts = sort.to_sym
-        {
-            :metadata => metadata,
-            :response =>
-                {
-                    :total_products => @user_products.count,
-                    :products => @user_products.order_by(sorts.send(params[:order])).page(params[:page]).per(
-                        params[:per]).as_json(:only => [:stock], :methods => [:date_posted])
-                }
-        }
+        if !sort.in?(['title', 'created_at', 'views', 'stock']) || !order.in?(['desc', 'asc'])
+          {
+              :metatdata => metadata(501, 'Bad Request'),
+              :response => ''
+          }
+        else
+          @user_products = User.get_user_with_token(request.env['HTTP_AUTHORIZATION']).products
+          sorts = sort.to_sym
+          {
+              :metadata => metadata,
+              :response =>
+                  {
+                      :total_products => @user_products.count,
+                      :products => @user_products.order_by(sorts.send(params[:order])).page(params[:page]).per(
+                          params[:per]).as_json(:only => [:stock], :methods => [:date_posted])
+                  }
+          }
+        end
       end
     end
   end
