@@ -1,9 +1,7 @@
 
 == Marketplace - An Online Store API to add,sell and buy products.
 
- Online Marketplace is a non-profit online store where different User/Seller can subscribe to
- sell their products. API has been designed to develop a Mobile Application which can be
- used by the Seller to View, Manage products i.e. Add, Edit, Update, Delete.
+ Online Marketplace is a non-profit online store where different User/Seller can subscribe to sell their products. API has been designed to develop a Mobile Application which can be used by the Seller to View, Manage products i.e. Add, Edit, Update, Delete.
 
 == How to Install
 
@@ -15,7 +13,7 @@
 
 == Hosting
 
-* Application has been hosted for Paas in Heroku and MongoHQ http://heroku-marketplace.herokuapp.com
+* Application has been hosted for Paas in Heroku<http://heroku.com> and MongoHQ<http://mongohq.com> http://heroku-marketplace.herokuapp.com/api/v1/store
 
 == How to Check the API Response/Request
 
@@ -26,16 +24,13 @@
 == Some Sample Request url with Sample Data in DB.
 
 user/add
-    curl -d '{"name":"Andrew Flicks","shop":"Boys Zone","contact":"","primary_mail":"contact@boyszone.com"}'
-    -H "Content-Type:application/json" -H "Authorization:generalusertoken"
-    "http://heroku-marketplace.herokuapp.com/api/v1/store/user/add"
+    curl -d '{"name":"Andrew Flicks","shop":"Boys Zone","contact":"","primary_mail":"contact@boyszone.com"}' -H "Content-Type:application/json" -H "Authorization:generalusertoken" "http://heroku-marketplace.herokuapp.com/api/v1/store/user/add"
 
 user/delete (replace token with token you received from previous request)
     curl -X DELETE -H "Authorization:replacetoken" "http://heroku-marketplace.herokuapp.com/api/v1/store/user/delete"
 
 user/ownedproduct
-    curl -H "Authorization:d969e9b78cc159bf"
-    "http://heroku-marketplace.herokuapp.com/api/v1/store/user/ownedproduct?sort=stock&order=desc&page=1&per=20"
+    curl -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/user/ownedproduct?sort=stock&order=desc&page=1&per=20"
 
 product/search
     curl -H "Authorization:d969e9b78cc159bf" "heroku-marketplace.herokuapp.com/api/v1/store/product/search?q=polo+casual&seller=Trending+Fabrics&available=true&offer=false&sort=price&order=desc&page=1&per=2"
@@ -50,18 +45,13 @@ product/product_id
     curl -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/product/5270b91c1d41c85636000006"
 
 product/manage/add
-    curl -d '{"title":"Polo Woolen Jacket", "description": "Latest Trending Jackets", "category": [ "Clothing"], "permalink": null, "stock": 72,"price": 1599, "discount": 20,
-    "shipment_charge": 150, "cash_on_delivery": true, "offer": true, "offer_description": "Buy One Get One", "display_image":"http://www.badhaven.com/wp-content/uploads/2012/07/noImageAvailable300.gif",
-    "screenshots": null, "tags":["polo" , "trending" ] }' -H "Content-Type:application/json" -H "Authorization:d969e9b78cc159bf"
-    "http://heroku-marketplace.herokuapp.com/api/v1/store/product/manage/add"
+    curl -d '{"title":"Polo Woolen Jacket", "description": "Latest Trending Jackets", "category": [ "Clothing"], "permalink": null, "stock": 72,"price": 1599, "discount": 20, "shipment_charge": 150, "cash_on_delivery": true, "offer": true, "offer_description": "Buy One Get One", "display_image":"http://www.badhaven.com/wp-content/uploads/2012/07/noImageAvailable300.gif", "screenshots": null, "tags":["polo" , "trending" ] }' -H "Content-Type:application/json" -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/product/manage/add"
 
 product/manage/edit/product_id (replace product_id with id you received from adding the product)
     curl -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/product/manage/edit/5270c0711d41c84856000002"
 
 product/manage/update/product_id (replace product_id with id you received from editing the product)
-    curl  -X PUT -d '{"title":"Latest Trending Jacket", "description": null, "category": [ "clothing"], "permalink": null, "stock": 87,"price": 1599, "discount": 20, "shipment_charge": 200, "cash_on_delivery": true,
-    "offer": false, "offer_description": null, "display_image":"http://www.badhaven.com/wp-content/uploads/2012/07/noImageAvailable300.gif", "screenshots": null, "tags":["polo" , "trending" ] }'
-    -H "Content-Type:application/json" -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/product/manage/update/5270c0711d41c84856000002"
+    curl  -X PUT -d '{"title":"Latest Trending Jacket", "description": null, "category": [ "clothing"], "permalink": null, "stock": 87,"price": 1599, "discount": 20, "shipment_charge": 200, "cash_on_delivery": true, "offer": false, "offer_description": null, "display_image":"http://www.badhaven.com/wp-content/uploads/2012/07/noImageAvailable300.gif", "screenshots": null, "tags":["polo" , "trending" ] }' -H "Content-Type:application/json" -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/product/manage/update/5270c0711d41c84856000002"
 
 product/manage/delete/product_id (replace product_id with id of product)
     curl -X DELETE -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/product/manage/delete/5270c0711d41c84856000002?permanent=true"
