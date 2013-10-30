@@ -32,6 +32,8 @@ class Product
   belongs_to :user, dependent: :delete
 
   scope :by_category, lambda { |category| tagged_with(:categories, category.downcase) }
+  scope :with_offer, where(:offer => true)
+  scope :with_availability, where(:stock.gt => 0)
 
   def url
     "#{Marketplace::API::BASE_URL}/#{Marketplace::API::routes[0].route_version}/store/product/#{self.id}"
@@ -46,7 +48,7 @@ class Product
   end
 
   def image_count
-    self.screenshots.count + 1
+    self.screenshots.count + 1 || 1
   end
 
   def increment_view_count
@@ -54,7 +56,7 @@ class Product
   end
 
   def related_products
-    Product.tagged_with(:categories, self.categories).limit(3)
+    Product.tagged_with(:categories, self.categories).limit(Marketplace::API::RELATED_PRODUCT_COUNT)
   end
 
   def update_product(title, desc, category, permalink, stock, price, discount, shipment, cod, offer, offerdesc, dp, screenshots, tags)
