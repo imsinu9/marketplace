@@ -33,28 +33,28 @@ user/ownedproduct
     curl -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/user/ownedproduct?sort=stock&order=desc&page=1&per=20"
 
 product/search
-    curl -H "Authorization:d969e9b78cc159bf" "heroku-marketplace.herokuapp.com/api/v1/store/product/search?q=polo+casual&seller=Trending+Fabrics&available=true&offer=false&sort=price&order=desc&page=1&per=2"
+    curl -H "Authorization:d969e9b78cc159bf" "heroku-marketplace.herokuapp.com/api/v1/store/product/search?q=polo+casual&seller=Trending+Fabrics&available=true&offer=false&sort=price&order=desc&page=1&per=20"
 
 category/list
     curl -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/category/list?sort=name&order=asc&page=1&per10"
 
 category/category_id (replace category_id with token you received from category list)
-    curl -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/category/526c92f0b7ea5fff37000002?sort=price&order=desc&page=1&per=10"
+    curl -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/category/5270c8d3c1c9529390000004?sort=price&order=desc&page=1&per=10"
 
 product/product_id
-    curl -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/product/5270b91c1d41c85636000006"
+    curl -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/product/5270c8d3c1c9529390000005"
 
 product/manage/add
     curl -d '{"title":"Polo Woolen Jacket", "description": "Latest Trending Jackets", "category": [ "Clothing"], "permalink": null, "stock": 72,"price": 1599, "discount": 20, "shipment_charge": 150, "cash_on_delivery": true, "offer": true, "offer_description": "Buy One Get One", "display_image":"http://www.badhaven.com/wp-content/uploads/2012/07/noImageAvailable300.gif", "screenshots": null, "tags":["polo" , "trending" ] }' -H "Content-Type:application/json" -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/product/manage/add"
 
 product/manage/edit/product_id (replace product_id with id you received from adding the product)
-    curl -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/product/manage/edit/5270c0711d41c84856000002"
+    curl -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/product/manage/edit/5270c8d3c1c9529390000005"
 
 product/manage/update/product_id (replace product_id with id you received from editing the product)
-    curl  -X PUT -d '{"title":"Latest Trending Jacket", "description": null, "category": [ "clothing"], "permalink": null, "stock": 87,"price": 1599, "discount": 20, "shipment_charge": 200, "cash_on_delivery": true, "offer": false, "offer_description": null, "display_image":"http://www.badhaven.com/wp-content/uploads/2012/07/noImageAvailable300.gif", "screenshots": null, "tags":["polo" , "trending" ] }' -H "Content-Type:application/json" -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/product/manage/update/5270c0711d41c84856000002"
+    curl  -X PUT -d '{"title":"Latest Trending Jacket", "description": null, "category": [ "clothing"], "permalink": null, "stock": 87,"price": 1599, "discount": 20, "shipment_charge": 200, "cash_on_delivery": true, "offer": false, "offer_description": null, "display_image":"http://www.badhaven.com/wp-content/uploads/2012/07/noImageAvailable300.gif", "screenshots": null, "tags":["polo" , "trending" ] }' -H "Content-Type:application/json" -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/product/manage/update/5270c8d3c1c9529390000005"
 
 product/manage/delete/product_id (replace product_id with id of product)
-    curl -X DELETE -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/product/manage/delete/5270c0711d41c84856000002?permanent=true"
+    curl -X DELETE -H "Authorization:d969e9b78cc159bf" "http://heroku-marketplace.herokuapp.com/api/v1/store/product/manage/delete/5270c8d3c1c9529390000006?permanent=true"
 
 
 == Description of Contents
